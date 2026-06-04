@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGAS - Gestión de Departamentos</title>
+    <link rel="stylesheet" href="assets/css/style_departamentos.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <header class="header-institucional">
+        <div class="logos-container">
+            <img src="assets/IMG/Logo_TEC2.png" alt="Logo ITS" class="logo-img">
+            <h1>Instituto Tecnológico de Saltillo</h1>
+            <img src="assets/IMG/TecNM_logo.png" alt="Logo TecNM" class="logo-img">
+        </div>
+        <div class="banner-maroon">
+            <span class="left">Menu</span>
+            <span class="right">Gestión de Departamentos</span>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="form-section">
+            <div class="input-group">
+                <div class="field">
+                    <label for="nombreDepto">Nombre del Departamento</label>
+                    <input type="text" id="nombreDepto" placeholder="Eje: Ingeniería en Sistemas">
+                </div>
+                
+                <div class="button-column">
+                    <button type="button" id="btnGuardar" class="btn-action">Guardar</button>
+                </div>
+            </div>
+        </section>
+
+        <section class="table-section">
+            <h2 class="table-title">Departamentos Registrados</h2>
+            <div class="table-wrapper">
+                <table id="tabla-departamentos">
+                    <thead>
+                        <tr>
+                            <th>Nombre del Departamento</th>
+                            <th style="width: 250px; text-align: center;">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <div id="toast-container"></div>
+
+    <script src="assets/js/gestionar_departamentos.js"></script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+version: '3.8'
+services:
+  db:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_ROOT_PASSWORD: 0845
+      MYSQL_DATABASE: sigas
+      MYSQL_USER: sigas_app
+      MYSQL_PASSWORD: password123
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+      - db_data:/var/lib/mysql
+
+  app:
+    image: app-sigas
+    ports:
+      - "80:3000"
+    environment:
+      - DB_HOST=db
+      - DB_USER=sigas_app
+      - DB_PASSWORD=password123
+      - DB_NAME=sigas
+    depends_on:
+      - db
+
+volumes:
+  db_data:

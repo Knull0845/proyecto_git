@@ -1,0 +1,170 @@
+:root {
+    --it-maroon: #7b1e34; /* Guinda institucional */
+    --tec-gray: #e0e0e0;  /* Gris de tabla */
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background-color: #f5f5f5;
+}
+
+/* Header Institucional */
+.logos-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 40px;
+    background: white;
+}
+
+.logos-container h1 {
+    font-size: 2rem;
+    margin: 0;
+}
+
+.logo-img { height: 70px; }
+
+.banner-maroon {
+    background-color: var(--it-maroon);
+    color: white;
+    padding: 12px 40px;
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+}
+
+/* Contenedor */
+.container {
+    max-width: 900px;
+    margin: 30px auto;
+    background: white;
+    padding: 25px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.field label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.btn-action {
+    margin-top: 15px;
+    padding: 10px 30px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-edit {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+    margin-right: 5px;
+}
+
+.btn-delete {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.btn-edit:hover, .btn-delete:hover {
+    opacity: 0.8;
+}
+
+/* Tabla image_bfe367.png */
+.table-title { font-size: 1.2rem; margin-top: 30px; }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #eee;
+}
+
+thead th {
+    background-color: var(--tec-gray);
+    padding: 12px;
+    text-align: left;
+    border-bottom: 2px solid #ccc;
+}
+
+tbody td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+
+
+/* Asegura que los botones tengan espacio y no se peguen al borde derecho */
+td:last-child {
+    padding-right: 20px;
+}
+
+/* Alinea el texto de la cabecera de acciones a la derecha */
+thead th:last-child {
+    text-align: right;
+    padding-right: 20px;
+}
+
+/* Estilo para el input del SweetAlert para que no se desborde */
+.swal2-input-centrado {
+    box-sizing: border-box !important;
+    width: 80% !important;
+    margin: 15px auto !important;
+}
+
+:root {
+    --it-maroon: #6a1b31;
+    --it-gold: #b39055;
+    --tec-gray: #e0e0e0;
+}
+
+body { font-family: Arial, sans-serif; margin: 0; background-color: #f5f5f5; }
+
+.header-institucional { background: white; border-bottom: 3px solid var(--it-gold); }
+.logos-container { display: flex; justify-content: space-between; align-items: center; padding: 10px 40px; }
+.logo-img { height: 70px; }
+
+.banner-maroon {
+    background-color: var(--it-maroon);
+    color: white;
+    padding: 12px 40px;
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.container { max-width: 900px; margin: 30px auto; background: white; padding: 25px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); border-radius: 8px; }
+
+.form-section { border-bottom: 2px solid #eee; padding-bottom: 20px; margin-bottom: 20px; }
+.field label { display: block; margin-bottom: 8px; font-weight: bold; color: var(--it-maroon); }
+input[type="text"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+
+.btn-action { margin-top: 15px; padding: 12px 30px; background-color: var(--it-maroon); color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; transition: 0.3s; }
+.btn-action:hover { background-color: #4d1022; }
+
+table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+thead th { background-color: var(--tec-gray); padding: 15px; text-align: left; color: #333; }
+tbody td { padding: 15px; border-bottom: 1px solid #eee; }
+tr:hover { background-color: #fcfcfc; }
+
+.btn-edit { background-color: #28a745; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; margin-right: 5px; }
+.btn-delete { background-color: #dc3545; color: white; border: none; padding: 8px 15px; cursor: pointer; border-radius: 4px; }
