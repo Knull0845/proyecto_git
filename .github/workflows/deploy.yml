@@ -5,48 +5,49 @@ on:
     branches:
       - main
 
+# Concurrency debe ir exactamente en la raíz, alineado con "on" y "name"
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   deploy:
     name: Deploy to EC2
     runs-on: ubuntu-latest
 
-  concurrency:
-    group: ${{ github.workflow }}-${{ github.ref }}
-    cancel-in-progress: true
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-  steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2_key
+          chmod 600 ~/.ssh/ec2_key
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-    - name: Configure SSH
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/ec2_key
-        chmod 600 ~/.ssh/ec2_key
-        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+      - name: Deploy with Docker Compose
+        run: |
+          ssh -i ~/.ssh/ec2_key ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
+            cd ${{ secrets.EC2_PROJECT_PATH }}
 
-    - name: Deploy with Docker Compose
-      run: |
-        ssh -i ~/.ssh/ec2_key ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-          cd ${{ secrets.EC2_PROJECT_PATH }}
+            echo "Asegurando limpieza de conflictos en Git..."
+            git reset --hard HEAD
 
-          echo "Asegurando limpieza de conflictos en Git..."
-          git reset --hard HEAD
+            echo "Actualizando código desde GitHub..."
+            git pull origin main
 
-          echo "Actualizando código desde GitHub..."
-          git pull origin main
+            echo "Deteniendo contenedores de forma segura (sin borrar datos)..."
+            docker-compose down
 
-          echo "Deteniendo contenedores de forma segura (sin borrar datos)..."
-          docker-compose down
+            echo "Construyendo imagen de forma nativa para evitar problemas de Buildx..."
+            docker build -t app-sigas:latest .
 
-          echo "Construyendo imagen de forma nativa para evitar problemas de Buildx..."
-          docker build -t app-sigas:latest .
+            echo "Levantando servicios actualizados..."
+            docker-compose up -d
 
-          echo "Levantando servicios actualizados..."
-          docker-compose up -d
+            echo "Limpiando imágenes huerfanas..."
+            docker image prune -f
 
-          echo "Limpiando imágenes huerfanas..."
-          docker image prune -f
-
-          echo "Despliegue finalizado exitosamente."
-        EOF
+            echo "Despliegue finalizado exitosamente."
+          EOF
