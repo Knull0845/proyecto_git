@@ -3,8 +3,8 @@
 -- Schema v2.0 - Reingeniería Completa Corregida
 -- ============================================================
 
-CREATE DATABASE IF NOT EXISTS SIGAS;
-USE SIGAS;
+CREATE DATABASE IF NOT EXISTS sigas;
+USE sigas;
 
 -- ============================================================
 -- 1. TABLAS MAESTRAS (Sin dependencias iniciales)
