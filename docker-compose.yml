@@ -15,7 +15,7 @@ services:
       - db_data:/var/lib/mysql
 
   app:
-    image: app-sigas
+    build: .
     ports:
       - "80:3000"
     environment:
