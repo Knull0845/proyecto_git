@@ -15,7 +15,7 @@ services:
       - db_data:/var/lib/mysql
 
   app:
-    image: app-sigas:latest  # <--- Cambiado de "build: ." a la imagen nativa
+    image: app-sigas:latest
     ports:
       - "80:3000"
     environment:
