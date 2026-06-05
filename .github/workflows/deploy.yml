@@ -32,8 +32,11 @@ jobs:
             echo "Deteniendo contenedores anteriores..."
             docker-compose down -v
 
-            echo "Reconstruyendo y levantando servicios..."
-            docker-compose up -d --build --force-recreate
+            echo "Construyendo imagen de forma nativa para evitar problemas de Buildx..."
+            docker build -t app-sigas:latest .
+
+            echo "Levantando servicios actualizados..."
+            docker-compose up -d --force-recreate
 
             echo "Limpiando imágenes antiguas..."
             docker image prune -f
