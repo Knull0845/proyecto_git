@@ -4,53 +4,53 @@
 -- SIGAS - Sistema de Gestión de Activos
 -- Schema v2.0 - Reingeniería Completa
 -- ============================================================
- 
+
 CREATE DATABASE IF NOT EXISTS SIGAS;
 USE SIGAS;
- 
+
 -- ============================================================
 -- 1. TABLAS MAESTRAS (Sin dependencias)
 -- ============================================================
- 
+
 CREATE TABLE IF NOT EXISTS Departamentos (
   ID_Departamentos INT AUTO_INCREMENT PRIMARY KEY,
   Nombre           VARCHAR(50) NOT NULL,
   Estatus_id_Estatus INT NOT NULL DEFAULT 1
 );
- 
+
 CREATE TABLE IF NOT EXISTS Estatus (
   id_Estatus INT AUTO_INCREMENT PRIMARY KEY,
   Estado     VARCHAR(20) NOT NULL
 );
- 
+
 CREATE TABLE IF NOT EXISTS Roles (
   ID_roles         INT AUTO_INCREMENT PRIMARY KEY,
   Nombre           VARCHAR(50) NOT NULL,
   Estatus_ID_Estatus INT NOT NULL DEFAULT 1
 );
- 
+
 CREATE TABLE IF NOT EXISTS Sexo (
   ID_Sexo INT AUTO_INCREMENT PRIMARY KEY,
   Nombre  VARCHAR(50) NOT NULL
 );
- 
+
 -- ============================================================
 -- 2. DATOS INICIALES REQUERIDOS
 -- ============================================================
- 
+
 INSERT IGNORE INTO Estatus (id_Estatus, Estado) VALUES
   (1, 'Activo'),
   (2, 'Inactivo');
- 
+
 INSERT IGNORE INTO Sexo (ID_Sexo, Nombre) VALUES
   (1, 'Masculino'),
   (2, 'Femenino'),
   (3, 'Otro');
- 
+
 -- ============================================================
 -- 3. TABLAS CON DEPENDENCIAS
 -- ============================================================
- 
+
 CREATE TABLE IF NOT EXISTS Salones (
   ID_Salon                          INT AUTO_INCREMENT PRIMARY KEY,
   Departamentos_ID_Departamentos    INT NOT NULL,
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS Salones (
   CONSTRAINT FK_Salones_Deptos FOREIGN KEY (Departamentos_ID_Departamentos)
     REFERENCES Departamentos(ID_Departamentos)
 );
- 
+
 CREATE TABLE IF NOT EXISTS Usuarios (
   ID_Usuarios                       INT AUTO_INCREMENT PRIMARY KEY,
   Estatus_id_Estatus                INT NOT NULL DEFAULT 1,
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS Usuarios (
   CONSTRAINT FK_Usuarios_Roles    FOREIGN KEY (Roles_ID_roles)                 REFERENCES Roles(ID_roles),
   CONSTRAINT FK_Usuarios_Deptos   FOREIGN KEY (Departamentos_ID_Departamentos) REFERENCES Departamentos(ID_Departamentos)
 );
- 
+
 CREATE TABLE IF NOT EXISTS Equipos (
   Id_equipo          INT AUTO_INCREMENT PRIMARY KEY,
   Estatus_id_Estatus INT NOT NULL DEFAULT 1,
@@ -90,7 +90,7 @@ CREATE TABLE IF NOT EXISTS Equipos (
   CONSTRAINT FK_Equipos_Estatus FOREIGN KEY (Estatus_id_Estatus) REFERENCES Estatus(id_Estatus),
   CONSTRAINT FK_Equipos_Salones FOREIGN KEY (Salones_ID_Salon)   REFERENCES Salones(ID_Salon)
 );
- 
+
 CREATE TABLE IF NOT EXISTS Componentes (
   ID_Componentes  INT AUTO_INCREMENT PRIMARY KEY,
   Equipos_Id_equipo INT NULL,
@@ -100,12 +100,12 @@ CREATE TABLE IF NOT EXISTS Componentes (
   CONSTRAINT FK_Componentes_Equipos FOREIGN KEY (Equipos_Id_equipo)
     REFERENCES Equipos(Id_equipo)
 );
- 
+
 -- ============================================================
 -- 4. TABLA REGISTRO_FALLAS (Módulo nuevo)
 --    Se añaden: Severidad, Estatus_Falla, Reportado_por
 -- ============================================================
- 
+
 CREATE TABLE IF NOT EXISTS Registro_fallas (
   ID_Falla           INT AUTO_INCREMENT PRIMARY KEY,
   Equipos_Id_equipo  INT  NOT NULL,
@@ -118,11 +118,11 @@ CREATE TABLE IF NOT EXISTS Registro_fallas (
   CONSTRAINT FK_Fallas_Equipos FOREIGN KEY (Equipos_Id_equipo)
     REFERENCES Equipos(Id_equipo)
 );
- 
+
 -- ============================================================
 -- 5. TABLA MOVIMIENTOS (Historial de altas y bajas)
 -- ============================================================
- 
+
 CREATE TABLE IF NOT EXISTS Movimientos (
   ID_Movimiento      INT AUTO_INCREMENT PRIMARY KEY,
   Equipos_Id_equipo  INT NOT NULL,
@@ -132,19 +132,19 @@ CREATE TABLE IF NOT EXISTS Movimientos (
   CONSTRAINT FK_Movimientos_Equipos FOREIGN KEY (Equipos_Id_equipo)
     REFERENCES Equipos(Id_equipo)
 );
- 
+
 -- ============================================================
 -- 6. RELACIONES FALTANTES (FK diferidas para Departamentos/Roles)
 -- ============================================================
- 
+
 ALTER TABLE Departamentos
   ADD CONSTRAINT FK_Deptos_Estatus
   FOREIGN KEY (Estatus_id_Estatus) REFERENCES Estatus(id_Estatus);
- 
+
 ALTER TABLE Roles
   ADD CONSTRAINT FK_Roles_Estatus
   FOREIGN KEY (Estatus_ID_Estatus) REFERENCES Estatus(id_Estatus);
- 
+
 
 INSERT IGNORE INTO Roles (ID_roles, Nombre) VALUES (1, 'Administrador');
 INSERT IGNORE INTO Sexo (ID_Sexo) VALUES (1); -- usando el truco de compatibilidad si es necesario
