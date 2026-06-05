@@ -1,69 +1,55 @@
 -- ============================================================
 -- SIGAS - Sistema de Gestión de Activos
--- Schema v2.0 - Reingeniería Completa Corregida
+-- Schema v3.1 - Restricciones de Llaves Únicas Garantizadas
 -- ============================================================
 
 CREATE DATABASE IF NOT EXISTS sigas;
 USE sigas;
 
 -- ============================================================
--- 1. TABLAS MAESTRAS (Sin dependencias iniciales)
+-- 1. CATÁLOGOS BASE
 -- ============================================================
-
-CREATE TABLE IF NOT EXISTS Estatus (
+CREATE TABLE IF NOT EXISTS estatus (
   id_Estatus INT AUTO_INCREMENT PRIMARY KEY,
   Estado     VARCHAR(20) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS Sexo (
+CREATE TABLE IF NOT EXISTS sexo (
   ID_Sexo INT AUTO_INCREMENT PRIMARY KEY,
   Nombre  VARCHAR(50) NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS Departamentos (
+CREATE TABLE IF NOT EXISTS departamentos (
   ID_Departamentos INT AUTO_INCREMENT PRIMARY KEY,
   Nombre            VARCHAR(50) NOT NULL,
   Estatus_id_Estatus INT NOT NULL DEFAULT 1
 );
 
-CREATE TABLE IF NOT EXISTS Roles (
+CREATE TABLE IF NOT EXISTS roles (
   ID_roles         INT AUTO_INCREMENT PRIMARY KEY,
   Nombre           VARCHAR(50) NOT NULL,
   Estatus_ID_Estatus INT NOT NULL DEFAULT 1
 );
 
 -- ============================================================
--- 2. DATOS INICIALES REQUERIDOS (Se insertan antes para evitar fallas de FK)
+-- 2. INSERCIONES DE CONTROL INMEDIATAS
 -- ============================================================
-
-INSERT IGNORE INTO Estatus (id_Estatus, Estado) VALUES
-  (1, 'Activo'),
-  (2, 'Inactivo');
-
-INSERT IGNORE INTO Sexo (ID_Sexo, Nombre) VALUES
-  (1, 'Masculino'),
-  (2, 'Femenino'),
-  (3, 'Otro');
-
-INSERT IGNORE INTO Roles (ID_roles, Nombre) VALUES 
-  (1, 'Administrador');
-
-INSERT IGNORE INTO Departamentos (ID_Departamentos, Nombre) VALUES 
-  (1, 'Sistemas');
+INSERT IGNORE INTO estatus (id_Estatus, Estado) VALUES (1, 'Activo'), (2, 'Inactivo');
+INSERT IGNORE INTO sexo (ID_Sexo, Nombre) VALUES (1, 'Masculino'), (2, 'Femenino'), (3, 'Otro');
+INSERT IGNORE INTO roles (ID_roles, Nombre) VALUES (1, 'Administrador');
+INSERT IGNORE INTO departamentos (ID_Departamentos, Nombre) VALUES (1, 'Sistemas');
 
 -- ============================================================
--- 3. TABLAS CON DEPENDENCIAS ESTRUCTURALES
+-- 3. TABLAS DEPENDIENTES
 -- ============================================================
-
-CREATE TABLE IF NOT EXISTS Salones (
+CREATE TABLE IF NOT EXISTS salones (
   ID_Salon                          INT AUTO_INCREMENT PRIMARY KEY,
   Departamentos_ID_Departamentos    INT NOT NULL,
   Nombre_Salon                      VARCHAR(60) NOT NULL,
-  CONSTRAINT FK_Salones_Deptos FOREIGN KEY (Departamentos_ID_Departamentos)
-    REFERENCES Departamentos(ID_Departamentos)
+  CONSTRAINT FK_Salones_Departamentos FOREIGN KEY (Departamentos_ID_Departamentos) REFERENCES departamentos(ID_Departamentos)
 );
 
-CREATE TABLE IF NOT EXISTS Usuarios (
+CREATE TABLE IF NOT EXISTS usuarios (
   ID_Usuarios                       INT AUTO_INCREMENT PRIMARY KEY,
   Estatus_id_Estatus                INT NOT NULL DEFAULT 1,
   Sexo_ID_Sexo                      INT NOT NULL,
@@ -75,13 +61,13 @@ CREATE TABLE IF NOT EXISTS Usuarios (
   Materno                           VARCHAR(50)  NULL,
   Correo                            VARCHAR(100) NOT NULL UNIQUE,
   Telefono                          BIGINT       NULL,
-  CONSTRAINT FK_Usuarios_Estatus  FOREIGN KEY (Estatus_id_Estatus)             REFERENCES Estatus(id_Estatus),
-  CONSTRAINT FK_Usuarios_Sexo     FOREIGN KEY (Sexo_ID_Sexo)                   REFERENCES Sexo(ID_Sexo),
-  CONSTRAINT FK_Usuarios_Roles    FOREIGN KEY (Roles_ID_roles)                 REFERENCES Roles(ID_roles),
-  CONSTRAINT FK_Usuarios_Deptos   FOREIGN KEY (Departamentos_ID_Departamentos) REFERENCES Departamentos(ID_Departamentos)
+  CONSTRAINT FK_Usuarios_Estatus        FOREIGN KEY (Estatus_id_Estatus)             REFERENCES estatus(id_Estatus),
+  CONSTRAINT FK_Usuarios_Sexo           FOREIGN KEY (Sexo_ID_Sexo)                   REFERENCES sexo(ID_Sexo),
+  CONSTRAINT FK_Usuarios_Roles          FOREIGN KEY (Roles_ID_roles)                 REFERENCES roles(ID_roles),
+  CONSTRAINT FK_Usuarios_Departamentos  FOREIGN KEY (Departamentos_ID_Departamentos) REFERENCES departamentos(ID_Departamentos)
 );
 
-CREATE TABLE IF NOT EXISTS Equipos (
+CREATE TABLE IF NOT EXISTS equipos (
   Id_equipo          INT AUTO_INCREMENT PRIMARY KEY,
   Estatus_id_Estatus INT NOT NULL DEFAULT 1,
   Salones_ID_Salon   INT NOT NULL,
@@ -91,25 +77,20 @@ CREATE TABLE IF NOT EXISTS Equipos (
   Tipo               VARCHAR(50)  NULL,
   ClaveUnicaEquipo   VARCHAR(20)  NOT NULL UNIQUE,
   Motivo             VARCHAR(255) NULL,
-  CONSTRAINT FK_Equipos_Estatus FOREIGN KEY (Estatus_id_Estatus) REFERENCES Estatus(id_Estatus),
-  CONSTRAINT FK_Equipos_Salones FOREIGN KEY (Salones_ID_Salon)   REFERENCES Salones(ID_Salon)
+  CONSTRAINT FK_Equipos_Estatus  FOREIGN KEY (Estatus_id_Estatus) REFERENCES estatus(id_Estatus),
+  CONSTRAINT FK_Equipos_Salones  FOREIGN KEY (Salones_ID_Salon)   REFERENCES salones(ID_Salon)
 );
 
-CREATE TABLE IF NOT EXISTS Componentes (
+CREATE TABLE IF NOT EXISTS componentes (
   ID_Componentes  INT AUTO_INCREMENT PRIMARY KEY,
   Equipos_Id_equipo INT NULL,
   Nombre          VARCHAR(50)  NOT NULL,
   Marca           VARCHAR(50)  NULL,
   Descripcion     VARCHAR(200) NULL,
-  CONSTRAINT FK_Componentes_Equipos FOREIGN KEY (Equipos_Id_equipo)
-    REFERENCES Equipos(Id_equipo)
+  CONSTRAINT FK_Componentes_Equipos FOREIGN KEY (Equipos_Id_equipo) REFERENCES equipos(Id_equipo)
 );
 
--- ============================================================
--- 4. TABLA REGISTRO_FALLAS
--- ============================================================
-
-CREATE TABLE IF NOT EXISTS Registro_fallas (
+CREATE TABLE IF NOT EXISTS registro_fallas (
   ID_Falla           INT AUTO_INCREMENT PRIMARY KEY,
   Equipos_Id_equipo  INT  NOT NULL,
   Fecha_falla        DATE NOT NULL DEFAULT (CURDATE()),
@@ -118,36 +99,20 @@ CREATE TABLE IF NOT EXISTS Registro_fallas (
   Estatus_Falla      ENUM('Pendiente','En proceso','Resuelta') NOT NULL DEFAULT 'Pendiente',
   Fecha_Resolucion   DATE NULL,
   Notas_Resolucion   VARCHAR(500) NULL,
-  CONSTRAINT FK_Fallas_Equipos FOREIGN KEY (Equipos_Id_equipo)
-    REFERENCES Equipos(Id_equipo)
+  CONSTRAINT FK_Fallas_Equipos FOREIGN KEY (Equipos_Id_equipo) REFERENCES equipos(Id_equipo)
 );
 
--- ============================================================
--- 5. TABLA MOVIMIENTOS
--- ============================================================
-
-CREATE TABLE IF NOT EXISTS Movimientos (
+CREATE TABLE IF NOT EXISTS movimientos (
   ID_Movimiento      INT AUTO_INCREMENT PRIMARY KEY,
   Equipos_Id_equipo  INT NOT NULL,
   Tipo_Movimiento    ENUM('Alta','Baja','Traslado') NOT NULL,
   Fecha_Movimiento   DATE NOT NULL DEFAULT (CURDATE()),
   Motivo             VARCHAR(255) NULL,
-  CONSTRAINT FK_Movimientos_Equipos FOREIGN KEY (Equipos_Id_equipo)
-    REFERENCES Equipos(Id_equipo)
+  CONSTRAINT FK_Movimientos_Equipos FOREIGN KEY (Equipos_Id_equipo) REFERENCES equipos(Id_equipo)
 );
 
 -- ============================================================
--- 6. RELACIONES DIFERIDAS Y USUARIO ADMINISTRADOR DE BASE
+-- 4. INYECTAR ADMINISTRADOR AL FINAL DE TODO
 -- ============================================================
-
-ALTER TABLE Departamentos
-  ADD CONSTRAINT FK_Deptos_Estatus
-  FOREIGN KEY (Estatus_id_Estatus) REFERENCES Estatus(id_Estatus);
-
-ALTER TABLE Roles
-  ADD CONSTRAINT FK_Roles_Estatus
-  FOREIGN KEY (Estatus_ID_Estatus) REFERENCES Estatus(id_Estatus);
-
--- Inyectar al administrador del sistema directamente en los cimientos
-INSERT IGNORE INTO Usuarios (Estatus_id_Estatus, Sexo_ID_Sexo, Roles_ID_roles, Departamentos_ID_Departamentos, Pass, Nombre, Paterno, Materno, Correo, Telefono) 
+INSERT IGNORE INTO usuarios (Estatus_id_Estatus, Sexo_ID_Sexo, Roles_ID_roles, Departamentos_ID_Departamentos, Pass, Nombre, Paterno, Materno, Correo, Telefono) 
 VALUES (1, 1, 1, 1, '1234', 'Admin', 'General', 'SIGAS', 'admin@sigas.com', 8441112233);
