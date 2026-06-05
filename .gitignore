@@ -1,3 +1,7 @@
 backend/node_modules/
 backend/dist/
 node_modules/Clave_Prueba.pem
+*.pem
+*.pub
+github-actions-ec2
+*Zone.Identifier
