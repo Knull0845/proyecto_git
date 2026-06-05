@@ -145,3 +145,8 @@ ALTER TABLE Roles
   ADD CONSTRAINT FK_Roles_Estatus
   FOREIGN KEY (Estatus_ID_Estatus) REFERENCES Estatus(id_Estatus);
  
+
+INSERT IGNORE INTO Roles (ID_roles, Nombre) VALUES (1, 'Administrador');
+INSERT IGNORE INTO Sexo (ID_Sexo) VALUES (1); -- usando el truco de compatibilidad si es necesario
+INSERT IGNORE INTO Departamentos (ID_Departamentos, Nombre) VALUES (1, 'Sistemas');
+INSERT IGNORE INTO Estatus (id_Estatus, Estado) VALUES (1, 'Activo');
