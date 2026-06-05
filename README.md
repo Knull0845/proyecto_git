@@ -1,7 +1,7 @@
-Pre-requisitos para Instalación
+re-requisitos para Instalación
 Para clonar y ejecutar este proyecto localmente, asegúrate de tener instalado lo siguiente:
 
-1. Entorno de Desarrollo
+1. Entono de Desarrollo
 Git: Necesario para clonar el repositorio y gestionar versiones.
 
 Visual Studio Code: Recomendado para editar el código (con la extensión de MySQL y Node.js instaladas).
