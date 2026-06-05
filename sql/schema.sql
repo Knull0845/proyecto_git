@@ -1,26 +1,29 @@
-
-
 -- ============================================================
 -- SIGAS - Sistema de Gestión de Activos
--- Schema v2.0 - Reingeniería Completa
+-- Schema v2.0 - Reingeniería Completa Corregida
 -- ============================================================
 
 CREATE DATABASE IF NOT EXISTS SIGAS;
 USE SIGAS;
 
 -- ============================================================
--- 1. TABLAS MAESTRAS (Sin dependencias)
+-- 1. TABLAS MAESTRAS (Sin dependencias iniciales)
 -- ============================================================
-
-CREATE TABLE IF NOT EXISTS Departamentos (
-  ID_Departamentos INT AUTO_INCREMENT PRIMARY KEY,
-  Nombre           VARCHAR(50) NOT NULL,
-  Estatus_id_Estatus INT NOT NULL DEFAULT 1
-);
 
 CREATE TABLE IF NOT EXISTS Estatus (
   id_Estatus INT AUTO_INCREMENT PRIMARY KEY,
   Estado     VARCHAR(20) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Sexo (
+  ID_Sexo INT AUTO_INCREMENT PRIMARY KEY,
+  Nombre  VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS Departamentos (
+  ID_Departamentos INT AUTO_INCREMENT PRIMARY KEY,
+  Nombre            VARCHAR(50) NOT NULL,
+  Estatus_id_Estatus INT NOT NULL DEFAULT 1
 );
 
 CREATE TABLE IF NOT EXISTS Roles (
@@ -29,13 +32,8 @@ CREATE TABLE IF NOT EXISTS Roles (
   Estatus_ID_Estatus INT NOT NULL DEFAULT 1
 );
 
-CREATE TABLE IF NOT EXISTS Sexo (
-  ID_Sexo INT AUTO_INCREMENT PRIMARY KEY,
-  Nombre  VARCHAR(50) NOT NULL
-);
-
 -- ============================================================
--- 2. DATOS INICIALES REQUERIDOS
+-- 2. DATOS INICIALES REQUERIDOS (Se insertan antes para evitar fallas de FK)
 -- ============================================================
 
 INSERT IGNORE INTO Estatus (id_Estatus, Estado) VALUES
@@ -47,8 +45,14 @@ INSERT IGNORE INTO Sexo (ID_Sexo, Nombre) VALUES
   (2, 'Femenino'),
   (3, 'Otro');
 
+INSERT IGNORE INTO Roles (ID_roles, Nombre) VALUES 
+  (1, 'Administrador');
+
+INSERT IGNORE INTO Departamentos (ID_Departamentos, Nombre) VALUES 
+  (1, 'Sistemas');
+
 -- ============================================================
--- 3. TABLAS CON DEPENDENCIAS
+-- 3. TABLAS CON DEPENDENCIAS ESTRUCTURALES
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS Salones (
@@ -102,8 +106,7 @@ CREATE TABLE IF NOT EXISTS Componentes (
 );
 
 -- ============================================================
--- 4. TABLA REGISTRO_FALLAS (Módulo nuevo)
---    Se añaden: Severidad, Estatus_Falla, Reportado_por
+-- 4. TABLA REGISTRO_FALLAS
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS Registro_fallas (
@@ -120,7 +123,7 @@ CREATE TABLE IF NOT EXISTS Registro_fallas (
 );
 
 -- ============================================================
--- 5. TABLA MOVIMIENTOS (Historial de altas y bajas)
+-- 5. TABLA MOVIMIENTOS
 -- ============================================================
 
 CREATE TABLE IF NOT EXISTS Movimientos (
@@ -134,7 +137,7 @@ CREATE TABLE IF NOT EXISTS Movimientos (
 );
 
 -- ============================================================
--- 6. RELACIONES FALTANTES (FK diferidas para Departamentos/Roles)
+-- 6. RELACIONES DIFERIDAS Y USUARIO ADMINISTRADOR DE BASE
 -- ============================================================
 
 ALTER TABLE Departamentos
@@ -145,8 +148,6 @@ ALTER TABLE Roles
   ADD CONSTRAINT FK_Roles_Estatus
   FOREIGN KEY (Estatus_ID_Estatus) REFERENCES Estatus(id_Estatus);
 
-
-INSERT IGNORE INTO Roles (ID_roles, Nombre) VALUES (1, 'Administrador');
-INSERT IGNORE INTO Sexo (ID_Sexo) VALUES (1); -- usando el truco de compatibilidad si es necesario
-INSERT IGNORE INTO Departamentos (ID_Departamentos, Nombre) VALUES (1, 'Sistemas');
-INSERT IGNORE INTO Estatus (id_Estatus, Estado) VALUES (1, 'Activo');
+-- Inyectar al administrador del sistema directamente en los cimientos
+INSERT IGNORE INTO Usuarios (Estatus_id_Estatus, Sexo_ID_Sexo, Roles_ID_roles, Departamentos_ID_Departamentos, Pass, Nombre, Paterno, Materno, Correo, Telefono) 
+VALUES (1, 1, 1, 1, '1234', 'Admin', 'General', 'SIGAS', 'admin@sigas.com', 8441112233);
