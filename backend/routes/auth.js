@@ -15,7 +15,7 @@ router.post('/login', async (req, res) => {
 
     try {
         const [rows] = await db.query(
-            'SELECT Correo, Roles_ID_roles FROM Usuarios WHERE Correo = ? AND Pass = ?',
+            'SELECT Correo, Roles_ID_roles FROM usuarios WHERE Correo = ? AND Pass = ?',
             [correo, pass]
         );
 
